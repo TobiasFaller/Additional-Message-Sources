@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.NoSuchMessageException;
 
 public class PrefixedBundledMessageSourceTest {
 
@@ -14,14 +15,28 @@ public class PrefixedBundledMessageSourceTest {
 	@Before
 	public void setUp() throws Exception {
 		mSource = new PrefixedBundledMessageSource();
-		
-		// Adds bundle "world.properties" with prefix "hello"
-		mSource.addBasenames("hello#world");
+
+		mSource.addBasenames("hello#world");  // "world.properties" with prefix "hello"
+		mSource.addBasenames("msg#messages/mymessages");  // "mymessages.properties" with "msg" prefix
+
+		mSource.addBasenames("other");  // "other.properties" without prefix
+		mSource.addBasenames("another");  // "another.properties" without prefix
 	}
 
 	@Test
 	public void test() {
+		// Prefixed bundles
 		assertEquals("value", mSource.getMessage("hello.test.key", null, Locale.ENGLISH));
+		assertEquals("_value_", mSource.getMessage("msg.this_is_a_test", null, Locale.ENGLISH));
+		
+		// Default bundles
+		assertEquals("key", mSource.getMessage("another", null, Locale.ENGLISH));
+		assertEquals("yav", mSource.getMessage("yak", null, Locale.ENGLISH));
+	}
+	
+	@Test(expected = NoSuchMessageException.class)
+	public void testMissingResource() {
+		mSource.getMessage("non-existing.key", null, Locale.ENGLISH);
 	}
 
 }
