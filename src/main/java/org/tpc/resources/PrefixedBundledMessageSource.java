@@ -86,6 +86,7 @@ public class PrefixedBundledMessageSource extends ResourceBundleMessageSource {
 				prefix = token.substring(0, index).trim();
 				name = token.substring(index + 1).trim();
 			} else {
+				prefix = null;
 				name = token;
 			}
 
